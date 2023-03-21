@@ -11,7 +11,7 @@ clients *clients_create(int len)
 {
     clients *res = malloc(sizeof(clients));
     res->len = len;
-    res->array = malloc(len * 10 * sizeof(int));
+    res->array = calloc(len * 12, sizeof(int));
     return res;
 }
 
@@ -27,6 +27,19 @@ void clients_destroy(clients *clts)
 }
 
 /**
+ * Il renvoie le nombre de likes pour un client donné
+ *
+ * @param clts la structure clients
+ * @param i l'index du client
+ *
+ * @return La nombre de likes du client i
+ */
+int get_like_len(clients *clts, int i)
+{
+    return clts->array[i * 12];
+}
+
+/**
  * Il renvoie la valeur du tableau à l'index donné
  *
  * @param clts la structure clients
@@ -37,7 +50,20 @@ void clients_destroy(clients *clts)
  */
 int get_like(clients *clts, int i, int j)
 {
-    return clts->array[i * 10 + j];
+    return clts->array[i * 12 + j + 1];
+}
+
+/**
+ * Il renvoie le nombre de hates pour un client donné
+ *
+ * @param clts la structure clients
+ * @param i l'index du client
+ *
+ * @return La nombre de hates du client i
+ */
+int get_hate_len(clients *clts, int i)
+{
+    return clts->array[i * 12 + 6];
 }
 
 /**
@@ -51,31 +77,32 @@ int get_like(clients *clts, int i, int j)
  */
 int get_hate(clients *clts, int i, int j)
 {
-    return clts->array[i * 10 + 5 + j];
+    return clts->array[i * 12 + 6 + j + 1];
+}
+
+/**
+ * Cette fonction définit le nombre de likes/hates pour un client donné
+ *
+ * @param clts la structure clients
+ * @param lh 0 si like, 1 si hate
+ * @param i le numéro de client
+ * @param val la valeur à régler
+ */
+void set_like_hate_len(clients *clts, int lh, int i, int val)
+{
+    clts->array[i * 12 + 6 * lh] = val;
 }
 
 /**
  * Cette fonction définit la valeur du tableau à l'index donné
  *
  * @param clts la structure clients
+ * @param lh 0 si like, 1 si hate
  * @param i le numéro de client
- * @param j l'index du like
+ * @param j l'index du like/hate
  * @param val la valeur à régler
  */
-void set_like(clients *clts, int i, int j, int val)
+void set_like_hate(clients *clts, int lh, int i, int j, int val)
 {
-    clts->array[i * 10 + j] = val;
-}
-
-/**
- * Cette fonction définit la valeur du tableau à l'index donné
- *
- * @param clts la structure clients
- * @param i le numéro de client
- * @param j l'index du hate
- * @param val la valeur à régler
- */
-void set_hate(clients *clts, int i, int j, int val)
-{
-    clts->array[i * 10 + 5 + j] = val;
+    clts->array[i * 12 + 6 * lh + j + 1] = val;
 }

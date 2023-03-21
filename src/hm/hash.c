@@ -14,7 +14,7 @@ int hash(char *some_value)
 
     for (i = 0; some_value[i] != '\0'; i++)
     {
-        res = res + some_value[i];
+        res = res * 7 + some_value[i];
     }
     return res;
 }

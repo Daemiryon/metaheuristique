@@ -111,18 +111,7 @@ int hm_get(hashmap *one_hm, char *one_key)
  */
 char *create_str(char *m)
 {
-    int i = 0;
-    while (m[i] != '\0' && m[i] != '\n')
-    {
-        i++;
-    }
-    char *res = malloc((i + 1) * sizeof(char));
-    i = 0;
-    while (m[i] != '\0' && m[i] != '\n')
-    {
-        res[i] = m[i];
-        i++;
-    }
-    res[i] = '\0';
+    char *res = calloc(16, sizeof(char));
+    strcpy(res, m);
     return res;
 }

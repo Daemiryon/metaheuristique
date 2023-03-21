@@ -22,10 +22,12 @@ typedef struct clients_ clients;
 clients *clients_create(int len);
 void clients_destroy(clients *clts);
 
+int get_like_len(clients *clts, int i);
 int get_like(clients *clts, int i, int j);
+int get_hate_len(clients *clts, int i);
 int get_hate(clients *clts, int i, int j);
 
-void set_like(clients *clts, int i, int j, int val);
-void set_hate(clients *clts, int i, int j, int val);
+void set_like_hate_len(clients *clts, int lh, int i, int val);
+void set_like_hate(clients *clts, int lh, int i, int j, int val);
 
 #endif /* _CLIENTS_ */
