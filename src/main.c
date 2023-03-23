@@ -1,5 +1,6 @@
 #include "io.h"
 #include "verbose.h"
+#include "sd/pizza.h"
 
 int main(int argc, char const *argv[])
 {
@@ -91,7 +92,7 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
-        verbose_section("PARSING ARGS");
+    verbose_section("PARSING ARGS");
     if (verbose)
     {
         printf("io_hm_size : %d\n", io_hm_size);
@@ -114,6 +115,22 @@ int main(int argc, char const *argv[])
     ******** ******** ********/
 
     // Bonjour, je suis le code
+    verbose_section("CREATE A RANDOM PIZZA");
+    pizza *pz = pizza_create(data->nb_ingr);
+    pizza_compose_random(pz);
+
+    verbose_section("EVALUATE PIZZA");
+    pizza_note *pz_note = pizza_note_create();
+    pizza_note_pizza(pz, pz_note, data->clts);
+
+    verbose_section("PRINT PIZZA");
+    pizza_print(pz, data);
+    if (verbose)
+        printf("Likes:%d/%d, Hates:%d/%d\n", pz_note->nb_likes, data->clts->len, pz_note->nb_hates, data->clts->len);
+
+    verbose_section("FREE PIZZA");
+    pizza_destroy(pz);
+    pizza_note_destroy(pz_note);
 
     verbose_time();
     /******** ******** ********
