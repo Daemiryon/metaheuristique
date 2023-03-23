@@ -56,9 +56,7 @@ int pizza_note_pizza(pizza *pz, clients *clts)
                 hate = 1;
             }
         }
-
-        printf("like %d, hate %d\n", like, hate);
-
+        
         if (like == get_like_len(clts, c) && !hate)
             res++;
     }
