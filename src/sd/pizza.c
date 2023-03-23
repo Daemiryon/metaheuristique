@@ -31,49 +31,38 @@ void pizza_compose_random(pizza *pz)
     }
 }
 
-pizza_note *pizza_note_create()
+int pizza_note_pizza(pizza *pz, clients *clts)
 {
-    return calloc(1, sizeof(pizza_note));
-}
-
-void pizza_note_destroy(pizza_note *pz_note)
-{
-    free(pz_note);
-}
-
-void pizza_note_pizza(pizza *pz, pizza_note *pz_note, clients *clts)
-{
-    int c, lh_index, i, skip;
-    pz_note->nb_likes = 0;
-    pz_note->nb_hates = 0;
-    for (i = 1; i < pz->nb_ingr; i++) // Pour chaque ingrédient
+    int c, lh_index, like, hate, res;
+    res = 0;
+    for (c = 0; c < clts->len; c++) // Pour chaque client
     {
 
-        skip = 0;
-        for (c = 0; (c < clts->len && !skip); c++) // Pour chaque client
+        like = 0;
+        for (lh_index = 0; lh_index < get_like_len(clts, c); lh_index++) // Pour chaque like
         {
-            for (lh_index = 0; lh_index < get_like_len(clts, c); lh_index++) // Pour chaque like
+
+            if (pz->ingr[get_like(clts, c, lh_index)])
             {
-                if (get_like(clts, c, lh_index) == pz->ingr[i])
-                {
-                    pz_note->nb_likes++;
-                    skip = 1;
-                }
+                like++;
             }
         }
-        skip = 0;
-        for (c = 0; (c < clts->len && !skip); c++) // Pour chaque client
+
+        hate = 0;
+        for (lh_index = 0; (lh_index < get_hate_len(clts, c) && !hate); lh_index++) // Pour chaque hate
         {
-            for (lh_index = 0; lh_index < get_hate_len(clts, c); lh_index++) // Pour chaque hate
+            if (pz->ingr[get_hate(clts, c, lh_index)])
             {
-                if (get_hate(clts, c, lh_index) == pz->ingr[i])
-                {
-                    pz_note->nb_hates++;
-                    skip = 1;
-                }
+                hate = 1;
             }
         }
+
+        printf("like %d, hate %d\n", like, hate);
+
+        if (like == get_like_len(clts, c) && !hate)
+            res++;
     }
+    return res;
 }
 
 void pizza_print(pizza *pz, input_data *data)

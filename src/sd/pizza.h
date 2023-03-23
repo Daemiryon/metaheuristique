@@ -16,23 +16,12 @@ struct pizza_
 
 typedef struct pizza_ pizza;
 
-struct pizza_note_
-{
-    int nb_likes;
-    int nb_hates;
-};
-
-typedef struct pizza_note_ pizza_note;
-
 pizza *pizza_create(int nbr_ingr);
 void pizza_destroy(pizza *pz);
 
 void pizza_compose_random(pizza *pz);
 
-pizza_note *pizza_note_create();
-void pizza_note_destroy(pizza_note *pz_note);
-
-void pizza_note_pizza(pizza *pz, pizza_note *pz_note, clients *clts);
+int pizza_note_pizza(pizza *pz, clients *clts);
 
 void pizza_print(pizza *pz, input_data *data);
 

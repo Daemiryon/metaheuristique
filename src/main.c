@@ -120,17 +120,15 @@ int main(int argc, char const *argv[])
     pizza_compose_random(pz);
 
     verbose_section("EVALUATE PIZZA");
-    pizza_note *pz_note = pizza_note_create();
-    pizza_note_pizza(pz, pz_note, data->clts);
+    int pz_note = pizza_note_pizza(pz, data->clts);
 
     verbose_section("PRINT PIZZA");
     pizza_print(pz, data);
     if (verbose)
-        printf("Likes:%d/%d, Hates:%d/%d\n", pz_note->nb_likes, data->clts->len, pz_note->nb_hates, data->clts->len);
+        printf("Likes:%d\n", pz_note);
 
     verbose_section("FREE PIZZA");
     pizza_destroy(pz);
-    pizza_note_destroy(pz_note);
 
     verbose_time();
     /******** ******** ********
