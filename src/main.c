@@ -1,25 +1,32 @@
 #include "io.h"
+#include "verbose.h"
 
 int main(int argc, char const *argv[])
 {
     /******** ******** ********
-     ****** ARRGS PARSING *****
-     ******** ******** ********/
+    ****** ARRGS PARSING *****
+    ******** ******** ********/
     const char *file_name = NULL;
     int io_hm_size = 500;
     int algo = 1;
+    verbose = 0;
 
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--help") == 0)
         {
             printf("./main file_name {--help} {--io_hm_size arg} {--algo arg}\n");
-            printf("\t--help        Affiche cette aide\n");
-            printf("\t--io_hm_size  Paramètre la taille de la hashmap pour parser le fichier entrée\n");
-            printf("\t              (0 < io_hm_size < 65536, valeur par défaut : 500)\n");
-            printf("\t--algo        Paramètre l'algorithme d'IA utilisé\n");
-            printf("\t              (doit être gen ou tabou, valeur par défaut : gen)\n");
+            printf("\t--help Affiche cette aide\n");
+            printf("\t--io_hm_size Paramètre la taille de la hashmap pour parser le fichier entrée\n");
+            printf("\t (0 < io_hm_size < 65536, valeur par défaut : 500)\n");
+            printf("\t--verbose Affiche les étapes de l'exécution\n");
+            printf("\t--algo Paramètre l'algorithme d'IA utilisé\n");
+            printf("\t (doit être gen ou tabou, valeur par défaut : gen)\n");
             return 0;
+        }
+        else if (strcmp(argv[i], "--verbose") == 0)
+        {
+            verbose = 1;
         }
         else if (strcmp(argv[i], "--io_hm_size") == 0)
         {
@@ -84,21 +91,34 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
+        verbose_section("PARSING ARGS");
+    if (verbose)
+    {
+        printf("io_hm_size : %d\n", io_hm_size);
+        printf("verbose : true\n");
+        if (algo)
+            printf("algo : gen\n");
+        else
+            printf("algo : tabou\n");
+    }
+
     /******** ******** ********
-     ********  IO/ IN  ********
-     ******** ******** ********/
+    ******** IO/ IN ********
+    ******** ******** ********/
+    verbose_section("PARSING FILE");
     input_data *data = input_data_create();
     io_parse(data, file_name, io_hm_size);
 
     /******** ******** ********
-     ********   TODO   ********
-     ******** ******** ********/
+    ******** TODO ********
+    ******** ******** ********/
 
     // Bonjour, je suis le code
 
+    verbose_time();
     /******** ******** ********
-     ********   FREE   ********
-     ******** ******** ********/
+    ******** FREE ********
+    ******** ******** ********/
     input_data_destroy(data);
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "io.h"
+#include "verbose.h"
 
 /**
  * Il crée une structure input_data et renvoie un pointeur vers celle-ci
@@ -70,6 +71,10 @@ void io_parse(input_data *data, const char *file_in, int io_hm_size)
     fscanf(fp, "%d", &c);
 
     data->clts = clients_create(c);
+
+    if (verbose)
+        printf("Nombre de clients : %d\n", data->clts->len);
+
     data->hm = hm_create(io_hm_size);
 
     for (i = 0; i < data->clts->len; i++)
@@ -85,6 +90,9 @@ void io_parse(input_data *data, const char *file_in, int io_hm_size)
             }
         }
     }
+
+    if (verbose)
+        printf("Nombre d'ingrédients : %d\n", data->nb_ingr-1);
 
     data->reversed_hm = calloc(data->nb_ingr, sizeof(char *));
     for (i = 0; i < data->hm->size; i++)

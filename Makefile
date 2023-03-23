@@ -12,8 +12,8 @@ build/:
 	mkdir -p build/
 
 # MAIN
-main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o
-	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o
+	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 build/main.o: build/ src/main.c src/io.h
 	gcc -c src/main.c -o build/main.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
@@ -41,6 +41,11 @@ build/hash.o: build/ src/hm/hash.c src/hm/hash.h
 
 build/clients.o: build/ src/sd/clients.c src/sd/clients.h
 	gcc -c src/sd/clients.c -o build/clients.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+
+#VERBOSE
+build/verbose.o: build/ src/verbose.c src/verbose.h
+	gcc -c src/verbose.c -o build/verbose.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+
 
 ######## ######## ########
 ########  CLEAN   ########
