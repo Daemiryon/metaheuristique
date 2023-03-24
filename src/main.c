@@ -1,6 +1,7 @@
 #include "io.h"
 #include "verbose.h"
 #include "sd/pizza.h"
+#include "sd/population.h"
 
 int main(int argc, char const *argv[])
 {
@@ -115,20 +116,14 @@ int main(int argc, char const *argv[])
     ******** ******** ********/
 
     // Bonjour, je suis le code
-    verbose_section("CREATE A RANDOM PIZZA");
-    pizza *pz = pizza_create(data->nb_ingr);
-    pizza_compose_random(pz);
+    verbose_section("CREATE A RANDOM POPULATION");
+    population* pop = population_create(1000, data->nb_ingr);
 
-    verbose_section("EVALUATE PIZZA");
-    int pz_note = pizza_note_pizza(pz, data->clts);
-
-    verbose_section("PRINT PIZZA");
-    pizza_print(pz, data);
-    if (verbose)
-        printf("Likes:%d\n", pz_note);
+    verbose_section("EVALUATE POPULATION");
+    population_note_pizzas(pop, data->clts);
 
     verbose_section("FREE PIZZA");
-    pizza_destroy(pz);
+    population_destroy(pop);
 
     verbose_time();
     /******** ******** ********

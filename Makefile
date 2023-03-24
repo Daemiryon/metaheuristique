@@ -12,8 +12,8 @@ build/:
 	mkdir -p build/
 
 # MAIN
-main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o
-	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o  -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o
+	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 build/main.o: build/ src/main.c src/io.h
 	gcc -c src/main.c -o build/main.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
@@ -44,6 +44,9 @@ build/clients.o: build/ src/sd/clients.c src/sd/clients.h
 
 build/pizza.o: build/ src/sd/pizza.c src/sd/pizza.h
 	gcc -c src/sd/pizza.c -o build/pizza.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+
+build/population.o: build/ src/sd/population.c src/sd/population.h
+	gcc -c src/sd/population.c -o build/population.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 #VERBOSE
 build/verbose.o: build/ src/verbose.c src/verbose.h

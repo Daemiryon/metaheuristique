@@ -38,7 +38,7 @@ int pizza_note_pizza(pizza *pz, clients *clts)
     for (c = 0; c < clts->len; c++) // Pour chaque client
     {
 
-        like = 1; // Optimisation de 25%
+        like = 1;                                                                  // Optimisation de 25%
         for (lh_index = 0; (lh_index < get_like_len(clts, c) && like); lh_index++) // Pour chaque like
         {
 
@@ -48,7 +48,7 @@ int pizza_note_pizza(pizza *pz, clients *clts)
             }
         }
 
-        hate = 0; // Optimisation de 25%
+        hate = 0;                                                                   // Optimisation de 25%
         for (lh_index = 0; (lh_index < get_hate_len(clts, c) && !hate); lh_index++) // Pour chaque hate
         {
             if (pz->ingr[get_hate(clts, c, lh_index)])
@@ -56,7 +56,7 @@ int pizza_note_pizza(pizza *pz, clients *clts)
                 hate = 1;
             }
         }
-        
+
         if (like && !hate)
             res++;
     }
@@ -79,4 +79,10 @@ void pizza_print(pizza *pz, input_data *data)
             printf("%s ", data->reversed_hm[i]);
     }
     printf("\n");
+}
+
+void pizza_copy(pizza *pz_dest, pizza *pz_srce)
+{
+    for (int i = 0; i < pz_dest->nb_ingr; i++)
+        pz_dest->ingr[i] = pz_srce->ingr[i];
 }

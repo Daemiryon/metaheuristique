@@ -25,4 +25,6 @@ int pizza_note_pizza(pizza *pz, clients *clts);
 
 void pizza_print(pizza *pz, input_data *data);
 
+void pizza_copy(pizza *pz_dest, pizza *pz_srce);
+
 #endif /* _PIZZA_ */
