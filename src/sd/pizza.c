@@ -22,7 +22,7 @@ void pizza_compose_random(pizza *pz)
     while (i < pz->nb_ingr)
     {
         r = rand();
-        for (j = 0; (i < pz->nb_ingr && j < 30); j++)
+        for (j = 0; (i < pz->nb_ingr && j < 31 /*log2(2^31)*/); j++)
         {
             pz->ingr[i] = r % 2;
             i++;
