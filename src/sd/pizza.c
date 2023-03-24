@@ -1,5 +1,11 @@
 #include "pizza.h"
 
+int random32()
+{
+    srand(time(NULL));
+    return rand();
+}
+
 pizza *pizza_create(int nbr_ingr)
 {
     pizza *res = calloc(1, sizeof(pizza));
@@ -18,10 +24,9 @@ void pizza_compose_random(pizza *pz)
 {
     int i, j, r;
     i = 1;
-    srand(time(NULL));
     while (i < pz->nb_ingr)
     {
-        r = rand();
+        r = random32();
         for (j = 0; (i < pz->nb_ingr && j < 31 /*log2(2^31)*/); j++)
         {
             pz->ingr[i] = r % 2;
@@ -85,4 +90,27 @@ void pizza_copy(pizza *pz_dest, pizza *pz_srce)
 {
     for (int i = 0; i < pz_dest->nb_ingr; i++)
         pz_dest->ingr[i] = pz_srce->ingr[i];
+}
+
+void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_mutation)
+{
+    if (random32() % proba_mutation != 0)
+    {
+        pizza_compose_random(pz_dest);
+    }
+    else
+    {
+        for (int i = 0; i < pz1->nb_ingr; i++)
+        {
+            pz_dest->ingr[i] = (
+                (
+                    pz1->ingr[i] && pz2->ingr[i]
+                ) || (
+                    pz2->ingr[i] && pz3->ingr[i]
+                ) || (
+                    pz3->ingr[i] && pz1->ingr[i]
+                )
+            );
+        }
+    }
 }

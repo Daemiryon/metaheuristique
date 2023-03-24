@@ -27,4 +27,6 @@ void pizza_print(pizza *pz, input_data *data);
 
 void pizza_copy(pizza *pz_dest, pizza *pz_srce);
 
+void pizza_enfant(pizza *pz_dest, pizza* pz1, pizza* pz2, pizza* pz3, int proba_mutation);
+
 #endif /* _PIZZA_ */
