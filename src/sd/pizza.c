@@ -38,17 +38,17 @@ int pizza_note_pizza(pizza *pz, clients *clts)
     for (c = 0; c < clts->len; c++) // Pour chaque client
     {
 
-        like = 0;
-        for (lh_index = 0; lh_index < get_like_len(clts, c); lh_index++) // Pour chaque like
+        like = 1; // Optimisation de 25%
+        for (lh_index = 0; (lh_index < get_like_len(clts, c) && like); lh_index++) // Pour chaque like
         {
 
-            if (pz->ingr[get_like(clts, c, lh_index)])
+            if (!pz->ingr[get_like(clts, c, lh_index)])
             {
-                like++;
+                like = 0;
             }
         }
 
-        hate = 0;
+        hate = 0; // Optimisation de 25%
         for (lh_index = 0; (lh_index < get_hate_len(clts, c) && !hate); lh_index++) // Pour chaque hate
         {
             if (pz->ingr[get_hate(clts, c, lh_index)])
@@ -57,7 +57,7 @@ int pizza_note_pizza(pizza *pz, clients *clts)
             }
         }
         
-        if (like == get_like_len(clts, c) && !hate)
+        if (like && !hate)
             res++;
     }
     return res;
