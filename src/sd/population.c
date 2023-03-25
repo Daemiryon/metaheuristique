@@ -48,6 +48,6 @@ void population_nextgen(population *pop)
 
     // TODO
 
-    pop->nb_pzs = pzs_dest;
+    pop->pzs = pzs_dest;
     pop->pzs_backup = pzs_srce;
 }

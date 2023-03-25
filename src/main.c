@@ -6,7 +6,7 @@
 int main(int argc, char const *argv[])
 {
     /******** ******** ********
-    ****** ARRGS PARSING *****
+    ****** ARGS PARSING *****
     ******** ******** ********/
     const char *file_name = NULL;
     int io_hm_size = 500;
