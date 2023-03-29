@@ -3,6 +3,7 @@
 
 #include "pizza.h"
 #include <stdlib.h>
+#include "../functions/random.h"
 
 struct population_
 {
@@ -20,8 +21,8 @@ void population_destroy(population *pop);
 
 void population_compose_random(population *pop);
 
-void population_note_pizzas(population *pop, clients *clts);
+int population_note_pizzas(population *pop, clients *clts);
 
-void population_nextgen(population *pop);
+void population_nextgen(population *pop, int max_fit_index);
 
 #endif /* _POPULATION_ */

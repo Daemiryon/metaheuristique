@@ -12,8 +12,8 @@ build/:
 	mkdir -p build/
 
 # MAIN
-main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o
-	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/random.o
+	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/random.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 build/main.o: build/ src/main.c src/io.h
 	gcc -c src/main.c -o build/main.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
@@ -29,7 +29,7 @@ build/test_io.o: build/ src/tests/test_io.c src/io.h
 build/io.o: build/ src/io.c src/io.h
 	gcc -c src/io.c -o build/io.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
-#HM
+#SD
 build/list.o: build/ src/hm/list.c src/hm/list.h
 	gcc -c src/hm/list.c -o build/list.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
@@ -47,6 +47,10 @@ build/pizza.o: build/ src/sd/pizza.c src/sd/pizza.h
 
 build/population.o: build/ src/sd/population.c src/sd/population.h
 	gcc -c src/sd/population.c -o build/population.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
+
+#FUNCTIONS
+build/random.o: build/ src/functions/random.c src/functions/random.h
+	gcc -c src/functions/random.c -o build/random.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 #VERBOSE
 build/verbose.o: build/ src/verbose.c src/verbose.h

@@ -1,11 +1,5 @@
 #include "pizza.h"
 
-int random32()
-{
-    srand(time(NULL));
-    return rand();
-}
-
 pizza *pizza_create(int nbr_ingr)
 {
     pizza *res = calloc(1, sizeof(pizza));
@@ -100,7 +94,7 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
     }
     else
     {
-        for (int i = 0; i < pz1->nb_ingr; i++)
+        /*for (int i = 0; i < pz1->nb_ingr; i++)
         {
             pz_dest->ingr[i] = (
                 (
@@ -111,6 +105,11 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
                     pz3->ingr[i] && pz1->ingr[i]
                 )
             );
+        }*/
+        pizza * tbl[] = {pz1, pz2, pz3};
+        for (int i = 0; i < pz1->nb_ingr; i++)
+        {
+            pz_dest->ingr[i] = tbl[random32() % 3]->ingr[i];
         }
     }
 }

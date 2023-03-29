@@ -12,7 +12,7 @@ population *population_create(int nb_pzs, int nb_ingr)
         res->pzs[i] = pizza_create(nb_ingr);
         res->pzs_backup[i] = pizza_create(nb_ingr);
     }
-    res->proba_mutation = 2;
+    res->proba_mutation = 100;
     return res;
 }
 
@@ -35,18 +35,51 @@ void population_compose_random(population *pop)
         pizza_compose_random(pop->pzs[i]);
 }
 
-void population_note_pizzas(population *pop, clients *clts)
+int population_note_pizzas(population *pop, clients *clts)
 {
+    int m = 0;
     for (int i = 0; i < pop->nb_pzs; i++)
+    {
         pop->notes[i] = pizza_note_pizza(pop->pzs[i], clts);
+        if (pop->notes[m] < pop->notes[i])
+            m = i;
+    }
+    return m;
 }
 
-void population_nextgen(population *pop)
+int roulette(int *notes, int len, int max_fit_index)
+{
+    int i, r, s;
+    // Obtenir un nombre aléatoire
+    r = random32();
+    // Calculer la somme des notes
+    s = 0;
+    for (i = 0; i < len; i++)
+        s = s + notes[i]*notes[i];
+    if (s == 0)
+        return r % len;
+    // On prend r dans [0, s[
+    r = r % s;
+    // Boucle pour trouver l'indice
+    for (i = 0; (r >= 0 && i < len); i++)
+        r = r - notes[i]*notes[i];
+    return i-1;
+}
+
+void population_nextgen(population *pop, int max_fit_index)
 {
     pizza **pzs_srce = pop->pzs;
     pizza **pzs_dest = pop->pzs_backup;
 
-    // TODO
+    for (int i = 0; i < pop->nb_pzs; i++)
+    {
+        pizza_enfant(
+            pzs_dest[i],
+            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
+            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
+            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
+            pop->proba_mutation);
+    }
 
     pop->pzs = pzs_dest;
     pop->pzs_backup = pzs_srce;

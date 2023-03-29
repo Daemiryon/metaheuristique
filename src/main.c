@@ -117,10 +117,15 @@ int main(int argc, char const *argv[])
 
     // Bonjour, je suis le code
     verbose_section("CREATE A RANDOM POPULATION");
-    population* pop = population_create(1000, data->nb_ingr);
+    population* pop = population_create(100, data->nb_ingr);
+    population_compose_random(pop);
 
     verbose_section("EVALUATE POPULATION");
-    population_note_pizzas(pop, data->clts);
+    for (int i = 0; i < 500; i++) {
+        int max_fit_index = population_note_pizzas(pop, data->clts);
+        printf("best note = %d\n", pop->notes[max_fit_index]);
+        population_nextgen(pop, max_fit_index);
+    }
 
     verbose_section("FREE PIZZA");
     population_destroy(pop);

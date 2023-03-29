@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdio.h>
+#include "../functions/random.h"
 #include "../io.h"
 
 struct pizza_
