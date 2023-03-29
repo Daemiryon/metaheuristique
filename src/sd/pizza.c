@@ -106,7 +106,7 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
                 )
             );
         }*/
-        pizza * tbl[] = {pz1, pz2, pz3};
+        pizza *tbl[] = {pz1, pz2, pz3};
         for (int i = 0; i < pz1->nb_ingr; i++)
         {
             pz_dest->ingr[i] = tbl[random32() % 3]->ingr[i];

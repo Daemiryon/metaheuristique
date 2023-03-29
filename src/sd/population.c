@@ -1,4 +1,5 @@
 #include "population.h"
+#include "math.h"
 
 population *population_create(int nb_pzs, int nb_ingr)
 {
@@ -12,7 +13,7 @@ population *population_create(int nb_pzs, int nb_ingr)
         res->pzs[i] = pizza_create(nb_ingr);
         res->pzs_backup[i] = pizza_create(nb_ingr);
     }
-    res->proba_mutation = 100;
+    res->proba_mutation = 2;
     return res;
 }
 
@@ -49,21 +50,41 @@ int population_note_pizzas(population *pop, clients *clts)
 
 int roulette(int *notes, int len, int max_fit_index)
 {
-    int i, r, s;
+    int i, r, s, prob, note;
+    double coeff = 30.0 / notes[max_fit_index];
     // Obtenir un nombre aléatoire
     r = random32();
     // Calculer la somme des notes
     s = 0;
     for (i = 0; i < len; i++)
-        s = s + notes[i]*notes[i];
+    {
+        note = (int)(notes[i] * coeff);
+
+        prob = note * note;
+        if (i == max_fit_index)
+        {
+            prob = prob * note;
+        }
+
+        s = s + prob;
+    }
     if (s == 0)
         return r % len;
     // On prend r dans [0, s[
     r = r % s;
     // Boucle pour trouver l'indice
     for (i = 0; (r >= 0 && i < len); i++)
-        r = r - notes[i]*notes[i];
-    return i-1;
+    {
+        note = (int)(notes[i] * coeff);
+
+        prob = note * note;
+        if (i == max_fit_index)
+        {
+            prob = prob * note;
+        }
+        r = r - prob;
+    }
+    return i - 1;
 }
 
 void population_nextgen(population *pop, int max_fit_index)
@@ -71,7 +92,12 @@ void population_nextgen(population *pop, int max_fit_index)
     pizza **pzs_srce = pop->pzs;
     pizza **pzs_dest = pop->pzs_backup;
 
-    for (int i = 0; i < pop->nb_pzs; i++)
+    for (int i = 0; i < pop->pzs[0]->nb_ingr; i++)
+    {
+        pzs_dest[0]->ingr[i] = pzs_srce[max_fit_index]->ingr[i];
+    }
+
+    for (int i = 1; i < pop->nb_pzs; i++)
     {
         pizza_enfant(
             pzs_dest[i],
