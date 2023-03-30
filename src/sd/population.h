@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include "../functions/random.h"
 
 struct population_
 {
@@ -28,6 +27,6 @@ void population_compose_random(population *pop);
 
 int population_note_pizzas(population *pop, clients *clts, int fep);
 
-void population_nextgen(population *pop, int max_fit_index);
+void population_nextgen(population *pop, int max_fit_index, int fep);
 
 #endif /* _POPULATION_ */

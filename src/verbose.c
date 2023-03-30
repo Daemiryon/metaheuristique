@@ -43,3 +43,15 @@ void verbose_time()
         verbose_last_wall_time = wall_time;
     }
 }
+
+void verbose_estimated(int nb_done, int nb_tot_todo)
+{
+    if (verbose)
+    {
+        long int restant = (time(NULL) - verbose_start_wall_time) * nb_tot_todo / nb_done;
+        printf("Temps de calcul estimé : %ldh %ldm %lds.\n",
+               restant / 3600,
+               (restant / 60) % 60,
+               restant % 60);
+    }
+}

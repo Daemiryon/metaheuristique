@@ -136,6 +136,7 @@ int main(int argc, char const *argv[])
     /******** ******** ********
     ******** TODO ********
     ******** ******** ********/
+    srand(time(NULL));
 
     // Bonjour, je suis le code
     verbose_section("CREATE A RANDOM POPULATION");
@@ -143,12 +144,17 @@ int main(int argc, char const *argv[])
     population_compose_random(pop);
 
     verbose_section("EVALUATE POPULATION");
-    for (int i = 0; i < 10000; i++)
+    int iteration = 1000;
+    int i, max_fit_index;
+    for (i = 0; i < iteration; i++)
     {
-        int max_fit_index = population_note_pizzas(pop, data->clts, fep);
-        printf("Gen %d, best note = %d\n", i, pop->notes[max_fit_index]);
-        population_nextgen(pop, max_fit_index);
+        if (i == 100)
+            verbose_estimated(100, iteration);
+        max_fit_index = population_note_pizzas(pop, data->clts, fep);
+        population_nextgen(pop, max_fit_index, fep);
     }
+
+    printf("Meilleure note après %d itérations : %d.\n", iteration, pop->notes[max_fit_index]);
 
     verbose_section("FREE PIZZA");
     population_destroy(pop);

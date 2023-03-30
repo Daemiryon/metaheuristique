@@ -20,7 +20,7 @@ void pizza_compose_random(pizza *pz)
     i = 1;
     while (i < pz->nb_ingr)
     {
-        r = random32();
+        r = rand();
         for (j = 0; (i < pz->nb_ingr && j < 31 /*log2(2^31)*/); j++)
         {
             pz->ingr[i] = r % 2;
@@ -88,7 +88,7 @@ void pizza_copy(pizza *pz_dest, pizza *pz_srce)
 
 void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_mutation)
 {
-    if (random32() % proba_mutation != 0)
+    if (rand() % proba_mutation != 0)
     {
         pizza_compose_random(pz_dest);
     }
@@ -109,7 +109,7 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
         pizza *tbl[] = {pz1, pz2, pz3};
         for (int i = 0; i < pz1->nb_ingr; i++)
         {
-            pz_dest->ingr[i] = tbl[random32() % 3]->ingr[i];
+            pz_dest->ingr[i] = tbl[rand() % 3]->ingr[i];
         }
     }
 }

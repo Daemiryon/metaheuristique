@@ -147,7 +147,7 @@ int roulette(population *pop)
     int i, r, prob, note;
     double coeff = 30.0 / notes[max_fit_index];
     // Obtenir un nombre aléatoire
-    r = random32();
+    r = rand();
     // Calculer la somme des notes
     if (s == -1)
     {
@@ -185,7 +185,7 @@ int roulette(population *pop)
     return i - 1;
 }
 
-void population_nextgen(population *pop, int max_fit_index)
+void population_nextgen_classic(population *pop, int max_fit_index)
 {
     pizza **pzs_srce = pop->pzs;
     pizza **pzs_dest = pop->pzs_backup;
@@ -207,4 +207,94 @@ void population_nextgen(population *pop, int max_fit_index)
 
     pop->pzs = pzs_dest;
     pop->pzs_backup = pzs_srce;
+}
+
+struct FEP_nextgen
+{
+    int id;
+    pizza **pzs_srce;
+    pizza **pzs_dest;
+    int deb;
+    int fin;
+    population *pop;
+};
+
+void *fep_nextgen(void *arg)
+{
+    struct FEP_nextgen *a = (struct FEP_nextgen *)arg;
+    int i_local;
+
+    for (i_local = a->deb; i_local < a->fin; i_local++)
+    {
+        pizza_enfant(
+            a->pzs_dest[i_local],
+            a->pzs_srce[roulette(a->pop)],
+            a->pzs_srce[roulette(a->pop)],
+            a->pzs_srce[roulette(a->pop)],
+            a->pop->proba_mutation);
+    }
+
+    pthread_exit(NULL);
+}
+
+void population_nextgen_fep(population *pop, int max_fit_index, int fep)
+{
+    pizza **pzs_srce = pop->pzs;
+    pizza **pzs_dest = pop->pzs_backup;
+
+    int calcul_par_thread = pop->nb_pzs / fep;
+
+    pthread_t thread[fep];
+    struct FEP_nextgen a[fep];
+
+    int i;
+
+    for (i = 0; i < pop->pzs[0]->nb_ingr; i++)
+    {
+        pzs_dest[0]->ingr[i] = pzs_srce[max_fit_index]->ingr[i];
+    }
+
+    for (i = 0; i < fep; i++)
+    {
+        a[i].id = i;
+        if (i == 0)
+            a[i].deb = 1;
+        else
+            a[i].deb = i * calcul_par_thread;
+        a[i].fin = (i + 1) * calcul_par_thread;
+        a[i].pzs_srce = pzs_srce;
+        a[i].pzs_dest = pzs_dest;
+        a[i].pop = pop;
+        pthread_create(&thread[i], NULL, fep_nextgen, (void *)&a[i]);
+    }
+
+    for (i = 0; i < fep; i++)
+    {
+        pthread_join(thread[i], NULL);
+    }
+
+    for (i = fep * calcul_par_thread; i < pop->nb_pzs; i++)
+    {
+        pizza_enfant(
+            a->pzs_dest[i],
+            a->pzs_srce[roulette(a->pop)],
+            a->pzs_srce[roulette(a->pop)],
+            a->pzs_srce[roulette(a->pop)],
+            a->pop->proba_mutation);
+    }
+
+    pop->pzs = pzs_dest;
+    pop->pzs_backup = pzs_srce;
+}
+
+void population_nextgen(population *pop, int max_fit_index, int fep)
+{
+    if (fep > 1)
+    {
+        population_nextgen_fep(pop, max_fit_index, fep);
+    }
+    else
+    {
+        population_nextgen_classic(pop, max_fit_index);
+    }
 }
