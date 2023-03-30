@@ -80,6 +80,30 @@ void pizza_print(pizza *pz, input_data *data)
     printf("\n");
 }
 
+void pizza_save_in_file(pizza *pz, input_data *data, const char *file_name)
+{
+    FILE *fd = fopen(file_name, "w");
+    int i, n, k;
+    n = 0;
+    char buf[20];
+    for (i = 1; i < pz->nb_ingr; i++)
+    {
+        if (pz->ingr[i])
+            n++;
+    }
+    k = sprintf(buf, "%d ", n);
+    fwrite(buf, sizeof(char), k, fd);
+    for (i = 1; i < pz->nb_ingr; i++)
+    {
+        if (pz->ingr[i])
+        {
+            k = sprintf(buf, "%s ", data->reversed_hm[i]);
+            fwrite(buf, sizeof(char), k, fd);
+        }
+    }
+    fclose(fd);
+}
+
 void pizza_copy(pizza *pz_dest, pizza *pz_srce)
 {
     for (int i = 0; i < pz_dest->nb_ingr; i++)

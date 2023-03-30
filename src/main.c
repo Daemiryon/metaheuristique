@@ -177,6 +177,7 @@ int main(int argc, char const *argv[])
 
     printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
     pizza_print(pop->pzs[max_fit_index], data);
+    pizza_save_in_file(pop->pzs[max_fit_index], data, "last_try");
 
     verbose_section("FREE PIZZA");
     population_destroy(pop);

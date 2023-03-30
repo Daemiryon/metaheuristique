@@ -672,3 +672,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,linux,windows,c,python
 .vscode/settings.json
 main
+last_try
