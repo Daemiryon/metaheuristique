@@ -3,6 +3,9 @@
 
 #include "pizza.h"
 #include <stdlib.h>
+#include <stdbool.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include "../functions/random.h"
 
 struct population_
@@ -10,6 +13,8 @@ struct population_
     pizza **pzs;
     int nb_pzs;
     int *notes;
+    int notes_sum;  // Est -1 si n'est pas initialisé (à initialiser dans la roulette)
+    int max_fit_index;
     int proba_mutation;
     pizza **pzs_backup;
 };
@@ -21,7 +26,7 @@ void population_destroy(population *pop);
 
 void population_compose_random(population *pop);
 
-int population_note_pizzas(population *pop, clients *clts);
+int population_note_pizzas(population *pop, clients *clts, int fep);
 
 void population_nextgen(population *pop, int max_fit_index);
 

@@ -8,6 +8,8 @@ population *population_create(int nb_pzs, int nb_ingr)
     res->pzs = malloc(nb_pzs * sizeof(pizza *));
     res->pzs_backup = malloc(nb_pzs * sizeof(pizza *));
     res->notes = calloc(nb_pzs, sizeof(int));
+    res->notes_sum = -1;
+    res->max_fit_index = -1;
     for (int i = 0; i < nb_pzs; i++)
     {
         res->pzs[i] = pizza_create(nb_ingr);
@@ -36,7 +38,7 @@ void population_compose_random(population *pop)
         pizza_compose_random(pop->pzs[i]);
 }
 
-int population_note_pizzas(population *pop, clients *clts)
+int population_note_pizzas_classic(population *pop, clients *clts)
 {
     int m = 0;
     for (int i = 0; i < pop->nb_pzs; i++)
@@ -45,28 +47,124 @@ int population_note_pizzas(population *pop, clients *clts)
         if (pop->notes[m] < pop->notes[i])
             m = i;
     }
+    pop->max_fit_index = m;
     return m;
 }
 
-int roulette(int *notes, int len, int max_fit_index)
+struct FEP_note_pizza
 {
-    int i, r, s, prob, note;
+    int id;
+    int *m;
+    int deb;
+    int fin;
+    population *pop;
+    clients *clts;
+    sem_t *sem;
+};
+
+void *fep_note_pizza(void *arg)
+{
+    struct FEP_note_pizza *a = (struct FEP_note_pizza *)arg;
+    int i_local;
+    int m_local = a->deb;
+
+    for (i_local = a->deb; i_local < a->fin; i_local++)
+    {
+        a->pop->notes[i_local] = pizza_note_pizza(a->pop->pzs[i_local], a->clts);
+        if (a->pop->notes[m_local] < a->pop->notes[i_local])
+            m_local = i_local;
+    }
+
+    sem_wait(a->sem);
+    if (a->pop->notes[m_local] > a->pop->notes[*(a->m)])
+        *(a->m) = m_local;
+    sem_post(a->sem);
+
+    pthread_exit(NULL);
+}
+
+int population_note_pizzas_fep(population *pop, clients *clts, int fep)
+{
+    int m = 0;
+
+    int calcul_par_thread = pop->nb_pzs / fep;
+
+    sem_t sem;
+    sem_init(&sem, 0, 1);
+
+    pthread_t thread[fep];
+    struct FEP_note_pizza a[fep];
+
+    int i;
+
+    for (i = 0; i < fep; i++)
+    {
+        a[i].id = i;
+        a[i].deb = i * calcul_par_thread;
+        a[i].fin = (i + 1) * calcul_par_thread;
+        a[i].pop = pop;
+        a[i].clts = clts;
+        a[i].m = &m;
+        a[i].sem = &sem;
+        pthread_create(&thread[i], NULL, fep_note_pizza, (void *)&a[i]);
+    }
+
+    for (i = 0; i < fep; i++)
+    {
+        pthread_join(thread[i], NULL);
+    }
+
+    for (i = fep * calcul_par_thread; i < pop->nb_pzs; i++)
+    {
+        pop->notes[i] = pizza_note_pizza(pop->pzs[i], clts);
+        if (pop->notes[m] < pop->notes[i])
+            m = i;
+    }
+
+    pop->max_fit_index = m;
+    return m;
+}
+
+int population_note_pizzas(population *pop, clients *clts, int fep)
+{
+    pop->notes_sum = -1;
+    if (fep > 1)
+    {
+        return population_note_pizzas_fep(pop, clts, fep);
+    }
+    else
+    {
+        return population_note_pizzas_classic(pop, clts);
+    }
+}
+
+int roulette(population *pop)
+{
+    int *notes = pop->notes;
+    int len = pop->nb_pzs;
+    int max_fit_index = pop->max_fit_index;
+    int s = pop->notes_sum;
+    int i, r, prob, note;
     double coeff = 30.0 / notes[max_fit_index];
     // Obtenir un nombre aléatoire
     r = random32();
     // Calculer la somme des notes
-    s = 0;
-    for (i = 0; i < len; i++)
+    if (s == -1)
     {
-        note = (int)(notes[i] * coeff);
-
-        prob = note * note;
-        if (i == max_fit_index)
+        s = 0;
+        for (i = 0; i < len; i++)
         {
-            prob = prob * note;
-        }
+            note = (int)(notes[i] * coeff);
 
-        s = s + prob;
+            prob = note * note;
+            if (i == max_fit_index)
+            {
+                prob = prob * note;
+            }
+
+            s = s + prob;
+        }
+        pop->notes_sum = s;
     }
     if (s == 0)
         return r % len;
@@ -101,9 +199,9 @@ void population_nextgen(population *pop, int max_fit_index)
     {
         pizza_enfant(
             pzs_dest[i],
-            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
-            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
-            pzs_srce[roulette(pop->notes, pop->nb_pzs, max_fit_index)],
+            pzs_srce[roulette(pop)],
+            pzs_srce[roulette(pop)],
+            pzs_srce[roulette(pop)],
             pop->proba_mutation);
     }
 

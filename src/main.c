@@ -11,6 +11,7 @@ int main(int argc, char const *argv[])
     const char *file_name = NULL;
     int io_hm_size = 500;
     int algo = 1;
+    int fep = 1;
     verbose = 0;
 
     for (int i = 1; i < argc; i++)
@@ -18,17 +19,37 @@ int main(int argc, char const *argv[])
         if (strcmp(argv[i], "--help") == 0)
         {
             printf("./main file_name {--help} {--io_hm_size arg} {--algo arg}\n");
-            printf("\t--help Affiche cette aide\n");
-            printf("\t--io_hm_size Paramètre la taille de la hashmap pour parser le fichier entrée\n");
-            printf("\t (0 < io_hm_size < 65536, valeur par défaut : 500)\n");
-            printf("\t--verbose Affiche les étapes de l'exécution\n");
-            printf("\t--algo Paramètre l'algorithme d'IA utilisé\n");
-            printf("\t (doit être gen ou tabou, valeur par défaut : gen)\n");
+            printf("\t--help        Affiche cette aide\n");
+            printf("\t--io_hm_size  Paramètre la taille de la hashmap pour parser le fichier entrée\n");
+            printf("\t              (0 < io_hm_size < 65536, valeur par défaut : 500)\n");
+            printf("\t--verbose     Affiche les étapes de l'exécution\n");
+            printf("\t--algo        Paramètre l'algorithme d'IA utilisé\n");
+            printf("\t              (doit être gen ou tabou, valeur par défaut : gen)\n");
+            printf("\t--fep         Paramètre le nombre de threads à utiliser\n");
+            printf("\t              (1 < fep < 128, valeur par défaut : 1)\n");
             return 0;
         }
         else if (strcmp(argv[i], "--verbose") == 0)
         {
             verbose = 1;
+        }
+        else if (strcmp(argv[i], "--fep") == 0)
+        {
+            if (i + 1 < argc)
+            {
+                fep = atoi(argv[i + 1]);
+                if (fep < 1 || fep >= 128)
+                {
+                    printf("Argument invalide pour --fep (voir ./main --help)\n");
+                    exit(1);
+                }
+                i++;
+            }
+            else
+            {
+                printf("Argument manquant pour --fep (voir ./main --help)\n");
+                exit(1);
+            }
         }
         else if (strcmp(argv[i], "--io_hm_size") == 0)
         {
@@ -102,6 +123,7 @@ int main(int argc, char const *argv[])
             printf("algo : gen\n");
         else
             printf("algo : tabou\n");
+        printf("fep : %d\n", fep);
     }
 
     /******** ******** ********
@@ -123,7 +145,7 @@ int main(int argc, char const *argv[])
     verbose_section("EVALUATE POPULATION");
     for (int i = 0; i < 10000; i++)
     {
-        int max_fit_index = population_note_pizzas(pop, data->clts);
+        int max_fit_index = population_note_pizzas(pop, data->clts, fep);
         printf("Gen %d, best note = %d\n", i, pop->notes[max_fit_index]);
         population_nextgen(pop, max_fit_index);
     }
