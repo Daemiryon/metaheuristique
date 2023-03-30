@@ -47,17 +47,19 @@ int pizza_note_pizza(pizza *pz, clients *clts)
             }
         }
 
-        hate = 0;                                                                   // Optimisation de 25%
-        for (lh_index = 0; (lh_index < get_hate_len(clts, c) && !hate); lh_index++) // Pour chaque hate
+        if (like)
         {
-            if (pz->ingr[get_hate(clts, c, lh_index)])
+            hate = 0;                                                                   // Optimisation de 25%
+            for (lh_index = 0; (lh_index < get_hate_len(clts, c) && !hate); lh_index++) // Pour chaque hate
             {
-                hate = 1;
+                if (pz->ingr[get_hate(clts, c, lh_index)])
+                {
+                    hate = 1;
+                }
             }
+            if (!hate)
+                res++;
         }
-
-        if (like && !hate)
-            res++;
     }
     return res;
 }
