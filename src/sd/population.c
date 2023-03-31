@@ -190,7 +190,7 @@ void population_nextgen_classic(population *pop, int max_fit_index)
     pizza **pzs_srce = pop->pzs;
     pizza **pzs_dest = pop->pzs_backup;
 
-    for (int i = 0; i < pop->pzs[0]->nb_ingr; i++)
+    for (int i = 1; i < pop->pzs[0]->nb_ingr; i++)
     {
         pzs_dest[0]->ingr[i] = pzs_srce[max_fit_index]->ingr[i];
     }
@@ -249,7 +249,7 @@ void population_nextgen_fep(population *pop, int max_fit_index, int fep)
 
     int i;
 
-    for (i = 0; i < pop->pzs[0]->nb_ingr; i++)
+    for (i = 1; i < pop->pzs[0]->nb_ingr; i++)
     {
         pzs_dest[0]->ingr[i] = pzs_srce[max_fit_index]->ingr[i];
     }
