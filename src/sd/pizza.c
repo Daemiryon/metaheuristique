@@ -139,3 +139,18 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
         }
     }
 }
+
+int pizza_next_pizza(pizza *pz)
+{
+    int i = 1;
+    int carry = 1;
+    int tmp;
+    while (carry && i < pz->nb_ingr)
+    {
+        tmp = pz->ingr[i] + carry;
+        pz->ingr[i] = tmp % 2;
+        carry = tmp / 2;
+        i++;
+    }
+    return !carry;
+}

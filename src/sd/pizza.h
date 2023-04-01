@@ -31,4 +31,6 @@ void pizza_copy(pizza *pz_dest, pizza *pz_srce);
 
 void pizza_enfant(pizza *pz_dest, pizza* pz1, pizza* pz2, pizza* pz3, int proba_mutation);
 
+int pizza_next_pizza(pizza* pz);
+
 #endif /* _PIZZA_ */

@@ -14,7 +14,8 @@ extern clock_t verbose_last_cpu_time;
 extern time_t verbose_last_wall_time;
 
 void verbose_time();
-void verbose_section(const char* section_name);
+void verbose_section(const char *section_name);
 void verbose_estimated(int nb_done, int nb_tot_todo);
+void verbose_estimated_long(int log2_nb_done, int log2_nb_tot_todo);
 
 #endif /* _VERBOSE_ */

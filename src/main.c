@@ -10,7 +10,14 @@ int main(int argc, char const *argv[])
     ******** ******** ********/
     const char *file_name = NULL;
     int io_hm_size = 500;
-    int algo = 1;
+    enum Algo_
+    {
+        Exp,
+        Gen,
+        Tabou
+    };
+    typedef enum Algo_ Algo;
+    Algo algo = Gen;
     int fep = 1;
     int iterate = 1000;
     verbose = 0;
@@ -25,7 +32,7 @@ int main(int argc, char const *argv[])
             printf("\t              (0 < io_hm_size < 65536, valeur par défaut : %d)\n", io_hm_size);
             printf("\t--verbose     Affiche les étapes de l'exécution\n");
             printf("\t--algo        Paramètre l'algorithme d'IA utilisé\n");
-            printf("\t              (doit être gen ou tabou, valeur par défaut : gen)\n");
+            printf("\t              (doit être gen, exp ou tabou, valeur par défaut : gen)\n");
             printf("\t--fep         Paramètre le nombre de threads à utiliser\n");
             printf("\t              (1 < fep < 128, valeur par défaut : %d)\n", fep);
             printf("\t--iterate     Paramètre le nombre d'itérations\n");
@@ -96,11 +103,15 @@ int main(int argc, char const *argv[])
             {
                 if (strcmp(argv[i + 1], "gen") == 0)
                 {
-                    algo = 1;
+                    algo = Gen;
                 }
                 else if (strcmp(argv[i + 1], "tabou") == 0)
                 {
-                    algo = 0;
+                    algo = Tabou;
+                }
+                else if (strcmp(argv[i + 1], "exp") == 0)
+                {
+                    algo = Exp;
                 }
                 else
                 {
@@ -160,27 +171,59 @@ int main(int argc, char const *argv[])
     ******** ******** ********/
     srand(time(NULL));
 
-    // Bonjour, je suis le code
-    verbose_section("CREATE A RANDOM POPULATION");
-    population *pop = population_create(100, data->nb_ingr);
-    population_compose_random(pop);
-
-    verbose_section("EVALUATE POPULATION");
-    int i, max_fit_index;
-    for (i = 0; i < iterate; i++)
+    if (algo == Exp)
     {
-        if (i == 100)
-            verbose_estimated(100, iterate);
-        max_fit_index = population_note_pizzas(pop, data->clts, fep);
-        population_nextgen(pop, max_fit_index, fep);
+        pizza *pz = pizza_create(data->nb_ingr);
+        pizza *best_pz = pizza_create(data->nb_ingr);
+        int note;
+        int best_note = -1;
+        int done = 0;
+        while (pizza_next_pizza(pz))
+        {
+            note = pizza_note_pizza(pz, data->clts);
+            if (note > best_note)
+            {
+                best_note = note;
+                pizza_copy(best_pz, pz);
+            }
+            if (done++ == 0x1000) // 2^12
+                verbose_estimated_long(12, data->nb_ingr);
+        }
+
+        printf("Meilleure note : %d.\n", best_note);
+        pizza_print(best_pz, data);
+        pizza_save_in_file(best_pz, data, "last_try");
+
+        pizza_destroy(pz);
+        pizza_destroy(best_pz);
     }
+    else if (algo == Gen)
+    {
+        verbose_section("CREATE A RANDOM POPULATION");
+        population *pop = population_create(100, data->nb_ingr);
+        population_compose_random(pop);
 
-    printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
-    pizza_print(pop->pzs[max_fit_index], data);
-    pizza_save_in_file(pop->pzs[max_fit_index], data, "last_try");
+        verbose_section("EVALUATE POPULATION");
+        int i, max_fit_index;
+        for (i = 0; i < iterate; i++)
+        {
+            if (i == 100)
+                verbose_estimated(100, iterate);
+            max_fit_index = population_note_pizzas(pop, data->clts, fep);
+            population_nextgen(pop, max_fit_index, fep);
+        }
 
-    verbose_section("FREE PIZZA");
-    population_destroy(pop);
+        printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
+        pizza_print(pop->pzs[max_fit_index], data);
+        pizza_save_in_file(pop->pzs[max_fit_index], data, "last_try");
+
+        verbose_section("FREE PIZZA");
+        population_destroy(pop);
+    }
+    else if (algo == Tabou)
+    {
+        printf("Not implemented yet.\n");
+    }
 
     verbose_time();
     /******** ******** ********
