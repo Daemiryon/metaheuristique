@@ -151,8 +151,10 @@ int main(int argc, char const *argv[])
     {
         printf("io_hm_size : %d\n", io_hm_size);
         printf("verbose : true\n");
-        if (algo)
+        if (algo == Gen)
             printf("algo : gen\n");
+        else if (algo == Exp)
+            printf("algo : exp\n");
         else
             printf("algo : tabou\n");
         printf("fep : %d\n", fep);
