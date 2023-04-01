@@ -152,13 +152,23 @@ int main(int argc, char const *argv[])
         printf("io_hm_size : %d\n", io_hm_size);
         printf("verbose : true\n");
         if (algo == Gen)
+        {
             printf("algo : gen\n");
+            printf("fep : %d\n", fep);
+            printf("iterate : %d\n", iterate);
+        }
         else if (algo == Exp)
+        {
             printf("algo : exp\n");
+            printf("fep : %d (unsupported for exp)\n", fep);
+            printf("iterate : %d (unsupported for exp)\n", iterate);
+        }
         else
+        {
             printf("algo : tabou\n");
-        printf("fep : %d\n", fep);
-        printf("iterate : %d\n", iterate);
+            printf("fep : %d (unsupported for tqbou)\n", fep);
+            printf("iterate : %d\n", iterate);
+        }
     }
 
     /******** ******** ********
