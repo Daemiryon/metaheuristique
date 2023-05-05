@@ -2,6 +2,7 @@
 #include "verbose.h"
 #include "sd/pizza.h"
 #include "sd/population.h"
+#include "recuit.h"
 
 int main(int argc, char const *argv[])
 {
@@ -14,7 +15,7 @@ int main(int argc, char const *argv[])
     {
         Exp,
         Gen,
-        Tabou
+        Recuit
     };
     typedef enum Algo_ Algo;
     Algo algo = Gen;
@@ -32,7 +33,7 @@ int main(int argc, char const *argv[])
             printf("\t              (0 < io_hm_size < 65536, valeur par défaut : %d)\n", io_hm_size);
             printf("\t--verbose     Affiche les étapes de l'exécution\n");
             printf("\t--algo        Paramètre l'algorithme d'IA utilisé\n");
-            printf("\t              (doit être gen, exp ou tabou, valeur par défaut : gen)\n");
+            printf("\t              (doit être gen, exp ou recuit, valeur par défaut : gen)\n");
             printf("\t--fep         Paramètre le nombre de threads à utiliser\n");
             printf("\t              (1 < fep < 128, valeur par défaut : %d)\n", fep);
             printf("\t--iterate     Paramètre le nombre d'itérations\n");
@@ -105,9 +106,9 @@ int main(int argc, char const *argv[])
                 {
                     algo = Gen;
                 }
-                else if (strcmp(argv[i + 1], "tabou") == 0)
+                else if (strcmp(argv[i + 1], "recuit") == 0)
                 {
-                    algo = Tabou;
+                    algo = Recuit;
                 }
                 else if (strcmp(argv[i + 1], "exp") == 0)
                 {
@@ -165,9 +166,9 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            printf("algo : tabou\n");
-            printf("fep : %d (unsupported for tqbou)\n", fep);
-            printf("iterate : %d\n", iterate);
+            printf("algo : recuit\n");
+            printf("fep : %d (unsupported for recuit)\n", fep);
+            printf("iterate : %d (unsupported for recuit)\n", iterate);
         }
     }
 
@@ -226,15 +227,60 @@ int main(int argc, char const *argv[])
         }
 
         printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
-        pizza_print(pop->pzs[max_fit_index], data);
         pizza_save_in_file(pop->pzs[max_fit_index], data, "last_try");
 
         verbose_section("FREE PIZZA");
         population_destroy(pop);
     }
-    else if (algo == Tabou)
+    else if (algo == Recuit)
     {
-        printf("Not implemented yet.\n");
+        pizza *pizza0 = pizza_create(data->nb_ingr);
+        pizza *pizza_voisine = pizza_create(data->nb_ingr);
+        pizza *pizza_swap;
+        int score0, score_voisine, delta_E;
+        double T = RECUIT_T_INIT;
+        int nb_accept = 0;
+
+        verbose_section("CREATE A RANDOM PIZZA");
+        pizza_compose_random(pizza0);
+        score0 = pizza_note_pizza(pizza0, data->clts);
+
+        verbose_section("RECUIT RUNNING");
+        while (T > RECUIT_T_LIM)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                pizza_get_voisine(pizza_voisine, pizza0);
+                score_voisine = pizza_note_pizza(pizza_voisine, data->clts);
+
+                delta_E = score0 - score_voisine;
+
+                if (metropolis_accept(delta_E, T))
+                {
+                    // Swap pizzas
+                    pizza_swap = pizza0;
+                    pizza0 = pizza_voisine;
+                    pizza_voisine = pizza_swap;
+                    // Update score
+                    score0 = score_voisine;
+                    // increase nb_accept
+                    nb_accept ++;
+                }
+
+                if (nb_accept == 12)
+                    break;
+            }
+
+            nb_accept = 0;
+            T = RECUIT_T_GEO * T;
+        }
+
+        printf("Meilleure note : %d.\n", score0);
+        pizza_save_in_file(pizza0, data, "last_try");
+
+        verbose_section("FREE PIZZA");
+        pizza_destroy(pizza0);
+        pizza_destroy(pizza_voisine);
     }
 
     verbose_time();

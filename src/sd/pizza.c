@@ -154,3 +154,15 @@ int pizza_next_pizza(pizza *pz)
     }
     return !carry;
 }
+
+void pizza_get_voisine(pizza *pz_dest, pizza *pz_srce)
+{
+    for (int i = 0; i < pz_dest->nb_ingr; i++)
+        pz_dest->ingr[i] = pz_srce->ingr[i];
+    
+    int i = rand() % pz_srce->nb_ingr;
+    while (i < pz_srce->nb_ingr) {
+        pz_dest->ingr[i] = !pz_srce->ingr[i];
+        i += rand() % pz_srce->nb_ingr;
+    }
+}

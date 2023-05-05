@@ -33,4 +33,6 @@ void pizza_enfant(pizza *pz_dest, pizza* pz1, pizza* pz2, pizza* pz3, int proba_
 
 int pizza_next_pizza(pizza* pz);
 
+void pizza_get_voisine(pizza *pz_dest, pizza *pz_srce);
+
 #endif /* _PIZZA_ */
