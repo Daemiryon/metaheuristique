@@ -9,7 +9,8 @@ int main(int argc, char const *argv[])
     /******** ******** ********
     ****** ARGS PARSING *****
     ******** ******** ********/
-    const char *file_name = NULL;
+    const char *file_name;
+    const char *output = "last_try";
     int io_hm_size = 500;
     enum Algo_
     {
@@ -21,6 +22,7 @@ int main(int argc, char const *argv[])
     Algo algo = Gen;
     int fep = 1;
     int iterate = 1000;
+    int target = -1;
     verbose = 0;
 
     for (int i = 1; i < argc; i++)
@@ -34,10 +36,14 @@ int main(int argc, char const *argv[])
             printf("\t--verbose     Affiche les étapes de l'exécution\n");
             printf("\t--algo        Paramètre l'algorithme d'IA utilisé\n");
             printf("\t              (doit être gen, exp ou recuit, valeur par défaut : gen)\n");
+            printf("\t--output      Paramètre le fichier le sortie\n");
+            printf("\t              (doit être un nom de fichier valide, valeur par défaut : `last_try`)\n");
             printf("\t--fep         Paramètre le nombre de threads à utiliser\n");
             printf("\t              (1 < fep < 128, valeur par défaut : %d)\n", fep);
-            printf("\t--iterate     Paramètre le nombre d'itérations\n");
+            printf("\t--iterate     Paramètre le nombre d'itérations (gen)\n");
             printf("\t              (1 < iterate, valeur par défaut : %d)\n", iterate);
+            printf("\t--target      Paramètre l'objectif à atteindre (recuit)\n");
+            printf("\t              (si -1 alors continue jusqu'à fin du recuit, valeur par défaut : %d)\n", target);
             return 0;
         }
         else if (strcmp(argv[i], "--verbose") == 0)
@@ -98,6 +104,24 @@ int main(int argc, char const *argv[])
                 exit(1);
             }
         }
+        else if (strcmp(argv[i], "--target") == 0)
+        {
+            if (i + 1 < argc)
+            {
+                target = atoi(argv[i + 1]);
+                if (iterate < -1)
+                {
+                    printf("Argument invalide pour --target (voir ./main --help)\n");
+                    exit(1);
+                }
+                i++;
+            }
+            else
+            {
+                printf("Argument manquant pour --target (voir ./main --help)\n");
+                exit(1);
+            }
+        }
         else if (strcmp(argv[i], "--algo") == 0)
         {
             if (i + 1 < argc)
@@ -124,6 +148,19 @@ int main(int argc, char const *argv[])
             else
             {
                 printf("Argument manquant pour --algo (voir ./main --help)\n");
+                exit(1);
+            }
+        }
+        else if (strcmp(argv[i], "--output") == 0)
+        {
+            if (i + 1 < argc)
+            {
+                output = argv[i+1];
+                i++;
+            }
+            else
+            {
+                printf("Argument manquant pour --output (voir ./main --help)\n");
                 exit(1);
             }
         }
@@ -157,19 +194,23 @@ int main(int argc, char const *argv[])
             printf("algo : gen\n");
             printf("fep : %d\n", fep);
             printf("iterate : %d\n", iterate);
+            printf("target : unsupported for gen\n");
         }
         else if (algo == Exp)
         {
             printf("algo : exp\n");
-            printf("fep : %d (unsupported for exp)\n", fep);
-            printf("iterate : %d (unsupported for exp)\n", iterate);
+            printf("fep : unsupported for exp\n");
+            printf("iterate : unsupported for exp\n");
+            printf("target : unsupported for exp\n");
         }
         else
         {
             printf("algo : recuit\n");
-            printf("fep : %d (unsupported for recuit)\n", fep);
-            printf("iterate : %d (unsupported for recuit)\n", iterate);
+            printf("fep : unsupported for recuit\n");
+            printf("iterate : unsupported for recuit\n");
+            printf("target : %d\n", target);
         }
+        printf("output : %s\n", output);
     }
 
     /******** ******** ********
@@ -205,7 +246,7 @@ int main(int argc, char const *argv[])
 
         printf("Meilleure note : %d.\n", best_note);
         pizza_print(best_pz, data);
-        pizza_save_in_file(best_pz, data, "last_try");
+        pizza_save_in_file(best_pz, data, output);
 
         pizza_destroy(pz);
         pizza_destroy(best_pz);
@@ -227,7 +268,7 @@ int main(int argc, char const *argv[])
         }
 
         printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
-        pizza_save_in_file(pop->pzs[max_fit_index], data, "last_try");
+        pizza_save_in_file(pop->pzs[max_fit_index], data, output);
 
         verbose_section("FREE PIZZA");
         population_destroy(pop);
@@ -246,8 +287,7 @@ int main(int argc, char const *argv[])
         score0 = pizza_note_pizza(pizza0, data->clts);
 
         verbose_section("RECUIT RUNNING");
-        printf("\n");
-        while (T > RECUIT_T_LIM && score0 < 2100)
+        while (T > RECUIT_T_LIM && (target == -1 || score0 < target))
         {
             for (int i = 0; i < 100; i++)
             {
@@ -271,13 +311,12 @@ int main(int argc, char const *argv[])
                 if (nb_accept == 12)
                     break;
             }
-            printf("\33MScore : %d\n", score0);
             nb_accept = 0;
             T = RECUIT_T_GEO * T;
         }
 
         printf("Meilleure note : %d.\n", score0);
-        pizza_save_in_file(pizza0, data, "last_try");
+        pizza_save_in_file(pizza0, data, output);
 
         verbose_section("FREE PIZZA");
         pizza_destroy(pizza0);
