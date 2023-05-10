@@ -12,8 +12,8 @@ build/:
 	mkdir -p build/
 
 # MAIN
-main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/recuit.o
-	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/recuit.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -pthread -lm
+main: build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/recuit.o build/graph.o
+	gcc build/main.o build/io.o build/list.o build/hashmap.o build/hash.o build/clients.o build/verbose.o build/pizza.o build/population.o build/recuit.o build/graph.o -o main -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -pthread -lm
 
 build/main.o: build/ src/main.c src/io.h
 	gcc -c src/main.c -o build/main.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -lm
@@ -54,6 +54,10 @@ build/recuit.o: build/ src/recuit.c src/recuit.h
 #VERBOSE
 build/verbose.o: build/ src/verbose.c src/verbose.h
 	gcc -c src/verbose.c -o build/verbose.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -lm
+
+#GRAPH
+build/graph.o: build/ src/graph.c src/graph.h
+	gcc -c src/graph.c -o build/graph.o -std=c99 -Wall -Wextra -pedantic -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -lm
 
 
 ######## ######## ########

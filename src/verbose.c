@@ -63,6 +63,8 @@ void verbose_estimated_long(int log2_nb_done, int log2_nb_tot_todo)
         long int spent = time(NULL) - verbose_start_wall_time;
         float f = (float)spent;
         f = f / 31557600 * 1000000000.; // nombre de secondes par an *10^9
+        if (f < 0.00001)
+            f = 0.00001;
         printf("Temps de calcul estimé : %f * 10^%d ans.\n",
                f,
                (log2_nb_tot_todo - log2_nb_done) * 3 / 10 + 9);

@@ -3,13 +3,14 @@
 #include "sd/pizza.h"
 #include "sd/population.h"
 #include "recuit.h"
+#include "graph.h"
 
 int main(int argc, char const *argv[])
 {
     /******** ******** ********
     ****** ARGS PARSING *****
     ******** ******** ********/
-    const char *file_name;
+    const char *file_name = NULL;
     const char *output = "last_try";
     int io_hm_size = 500;
     enum Algo_
@@ -24,12 +25,13 @@ int main(int argc, char const *argv[])
     int iterate = 1000;
     int target = -1;
     verbose = 0;
+    graph = NULL;
 
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--help") == 0)
         {
-            printf("./main file_name {--help} {--io_hm_size arg} {--algo arg} {--fep arg} {--iterate arg}\n");
+            printf("./main file_name {--help} {--io_hm_size arg} {--algo arg} {--output arg} {--fep arg} {--iterate arg} {--target arg} {--graph arg}\n");
             printf("\t--help        Affiche cette aide\n");
             printf("\t--io_hm_size  Paramètre la taille de la hashmap pour parser le fichier entrée\n");
             printf("\t              (0 < io_hm_size < 65536, valeur par défaut : %d)\n", io_hm_size);
@@ -44,6 +46,8 @@ int main(int argc, char const *argv[])
             printf("\t              (1 < iterate, valeur par défaut : %d)\n", iterate);
             printf("\t--target      Paramètre l'objectif à atteindre (recuit)\n");
             printf("\t              (si -1 alors continue jusqu'à fin du recuit, valeur par défaut : %d)\n", target);
+            printf("\t--graph       Paramètre le fichier le sortie du graphe\n");
+            printf("\t              (doit être un nom de fichier valide si NULL alors n'écrit pas, valeur par défaut : NULL)\n");
             return 0;
         }
         else if (strcmp(argv[i], "--verbose") == 0)
@@ -164,6 +168,19 @@ int main(int argc, char const *argv[])
                 exit(1);
             }
         }
+        else if (strcmp(argv[i], "--graph") == 0)
+        {
+            if (i + 1 < argc)
+            {
+                graph = argv[i+1];
+                i++;
+            }
+            else
+            {
+                printf("Argument manquant pour --graph (voir ./main --help)\n");
+                exit(1);
+            }
+        }
         else
         {
             if (file_name == NULL)
@@ -211,6 +228,7 @@ int main(int argc, char const *argv[])
             printf("target : %d\n", target);
         }
         printf("output : %s\n", output);
+        printf("graph : %s\n", graph);
     }
 
     /******** ******** ********
@@ -224,6 +242,7 @@ int main(int argc, char const *argv[])
     ******** TODO ********
     ******** ******** ********/
     srand(time(NULL));
+    graph_open();
 
     if (algo == Exp)
     {
@@ -265,6 +284,7 @@ int main(int argc, char const *argv[])
                 verbose_estimated(100, iterate);
             max_fit_index = population_note_pizzas(pop, data->clts, fep);
             population_nextgen(pop, max_fit_index, fep);
+            graph_write_gen(iterate, pop->notes[max_fit_index]);
         }
 
         printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);
@@ -287,6 +307,8 @@ int main(int argc, char const *argv[])
         score0 = pizza_note_pizza(pizza0, data->clts);
 
         verbose_section("RECUIT RUNNING");
+        if (verbose)
+            printf("\n");
         while (T > RECUIT_T_LIM && (target == -1 || score0 < target))
         {
             for (int i = 0; i < 100; i++)
@@ -311,6 +333,9 @@ int main(int argc, char const *argv[])
                 if (nb_accept == 12)
                     break;
             }
+            graph_write_recuit(T, score0);
+            if (verbose)
+                printf("\33MScore : %d\n", score0);
             nb_accept = 0;
             T = RECUIT_T_GEO * T;
         }
@@ -324,6 +349,7 @@ int main(int argc, char const *argv[])
     }
 
     verbose_time();
+    graph_close();
     /******** ******** ********
     ******** FREE ********
     ******** ******** ********/
