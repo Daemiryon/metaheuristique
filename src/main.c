@@ -246,7 +246,8 @@ int main(int argc, char const *argv[])
         score0 = pizza_note_pizza(pizza0, data->clts);
 
         verbose_section("RECUIT RUNNING");
-        while (T > RECUIT_T_LIM)
+        printf("\n");
+        while (T > RECUIT_T_LIM && score0 < 2100)
         {
             for (int i = 0; i < 100; i++)
             {
@@ -264,13 +265,13 @@ int main(int argc, char const *argv[])
                     // Update score
                     score0 = score_voisine;
                     // increase nb_accept
-                    nb_accept ++;
+                    nb_accept++;
                 }
 
                 if (nb_accept == 12)
                     break;
             }
-
+            printf("\33MScore : %d\n", score0);
             nb_accept = 0;
             T = RECUIT_T_GEO * T;
         }

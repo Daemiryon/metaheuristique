@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include "sd/pizza.h"
 
-#define RECUIT_T_INIT       2000.
-#define RECUIT_T_LIM        0.0001
-#define RECUIT_T_GEO        0.9
-#define RECUIT_NB_ACCEPT    12
+#define RECUIT_T_INIT 2000.
+#define RECUIT_T_LIM 0.0000000001
+#define RECUIT_T_GEO 0.999
+#define RECUIT_NB_ACCEPT 12
 
 bool metropolis_accept(int delta_E, double T);
 
