@@ -284,7 +284,7 @@ int main(int argc, char const *argv[])
                 verbose_estimated(100, iterate);
             max_fit_index = population_note_pizzas(pop, data->clts, fep);
             population_nextgen(pop, max_fit_index, fep);
-            graph_write_gen(iterate, pop->notes[max_fit_index]);
+            graph_write_gen(i, pop->notes[max_fit_index]);
         }
 
         printf("Meilleure note après %d itérations : %d.\n", iterate, pop->notes[max_fit_index]);

@@ -120,22 +120,26 @@ void pizza_enfant(pizza *pz_dest, pizza *pz1, pizza *pz2, pizza *pz3, int proba_
     }
     else
     {
-        /*for (int i = 0; i < pz1->nb_ingr; i++)
+        if (PIZZA_ENFANT_ALGO)
+            for (int i = 0; i < pz1->nb_ingr; i++)
+            {
+                pz_dest->ingr[i] = (
+                    (
+                        pz1->ingr[i] && pz2->ingr[i]
+                    ) || (
+                        pz2->ingr[i] && pz3->ingr[i]
+                    ) || (
+                        pz3->ingr[i] && pz1->ingr[i]
+                    )
+                );
+            }
+        else
         {
-            pz_dest->ingr[i] = (
-                (
-                    pz1->ingr[i] && pz2->ingr[i]
-                ) || (
-                    pz2->ingr[i] && pz3->ingr[i]
-                ) || (
-                    pz3->ingr[i] && pz1->ingr[i]
-                )
-            );
-        }*/
-        pizza *tbl[] = {pz1, pz2, pz3};
-        for (int i = 0; i < pz1->nb_ingr; i++)
-        {
-            pz_dest->ingr[i] = tbl[rand() % 3]->ingr[i];
+            pizza *tbl[] = {pz1, pz2};
+            for (int i = 0; i < pz1->nb_ingr; i++)
+            {
+                pz_dest->ingr[i] = tbl[rand() % 2]->ingr[i];
+            }
         }
     }
 }

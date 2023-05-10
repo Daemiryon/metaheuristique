@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include "../io.h"
 
+#define PIZZA_ENFANT_ALGO 1
+// 0 -> triploide
+// 1 -> classic diploide
+
 struct pizza_
 {
     bool *ingr;
