@@ -44,8 +44,8 @@ int main(int argc, char const *argv[])
             printf("\t              (1 < fep < 128, valeur par défaut : %d)\n", fep);
             printf("\t--iterate     Paramètre le nombre d'itérations (gen)\n");
             printf("\t              (1 < iterate, valeur par défaut : %d)\n", iterate);
-            printf("\t--target      Paramètre l'objectif à atteindre (recuit)\n");
-            printf("\t              (si -1 alors continue jusqu'à fin du recuit, valeur par défaut : %d)\n", target);
+            printf("\t--target      Paramètre l'objectif à atteindre (gen et recuit)\n");
+            printf("\t              (si -1 alors continue jusqu'à fin du recuit/nombre d'itérations, valeur par défaut : %d)\n", target);
             printf("\t--graph       Paramètre le fichier le sortie du graphe\n");
             printf("\t              (doit être un nom de fichier valide si NULL alors n'écrit pas, valeur par défaut : NULL)\n");
             return 0;
@@ -211,7 +211,7 @@ int main(int argc, char const *argv[])
             printf("algo : gen\n");
             printf("fep : %d\n", fep);
             printf("iterate : %d\n", iterate);
-            printf("target : unsupported for gen\n");
+            printf("target : %d\n", target);
         }
         else if (algo == Exp)
         {
@@ -278,7 +278,7 @@ int main(int argc, char const *argv[])
 
         verbose_section("EVALUATE POPULATION");
         int i, max_fit_index;
-        for (i = 0; i < iterate; i++)
+        for (i = 0; i < iterate && pop->notes[max_fit_index] < target; i++)
         {
             if (i == 100)
                 verbose_estimated(100, iterate);
