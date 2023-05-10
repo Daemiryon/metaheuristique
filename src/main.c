@@ -277,8 +277,8 @@ int main(int argc, char const *argv[])
         population_compose_random(pop);
 
         verbose_section("EVALUATE POPULATION");
-        int i, max_fit_index;
-        for (i = 0; i < iterate && pop->notes[max_fit_index] < target; i++)
+        int max_fit_index = 0;
+        for (int i = 0; i < iterate && (target == -1 || pop->notes[max_fit_index] < target); i++)
         {
             if (i == 100)
                 verbose_estimated(100, iterate);
